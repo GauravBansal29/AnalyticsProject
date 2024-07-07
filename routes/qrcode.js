@@ -10,7 +10,7 @@ router.post('/', async(req, res)=>{
         let {imgUrl, redirectUrl, userId} = req.body;
         const qr= new QRCode({imgUrl , redirectUrl, userId});
         await qr.save();
-        return res.status(201).json("Your QRCode is saved successfully")
+        return res.status(201).json(qr)
     }
     catch(err){
         console.log(err);
@@ -18,6 +18,20 @@ router.post('/', async(req, res)=>{
     }
 })
 
+// Update the redirect url of a qrcode by id
+router.put('/:id', async(req, res)=>{
+    try{
+        const qrid= req.params.id;
+        if(!qrid) return res.status(400).json('Bad request');
+        let {imgUrl, redirectUrl, userId} = req.body;
+        const updatedQR= await QRCode.findByIdAndUpdate(qrid, {imgUrl, redirectUrl, userId}, {new:true});
+        return res.status(200).json(updatedQR);
+    }
+    catch(err){
+        console.log(err);
+        return res.status(500).json(err);
+    }
+} )
 
 // delete a qrcode using qr id
 router.delete('/:id', async (req, res)=>{
